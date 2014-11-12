@@ -1,0 +1,3 @@
+[submodule "src/tools/go-simplejson"]
+	path = src/tools/go-simplejson
+	url = git@github.com:go-xorm/xorm.git

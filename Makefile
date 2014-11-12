@@ -17,7 +17,7 @@ clear-pkg:
 	rm -rf pkg
 
 build:
-	time go install server.go
+	time go install xrom.go
 
 get-martini:
 	go get github.com/go-martini/martini
@@ -31,8 +31,11 @@ get-mysql:
 dependence:
 	go install github.com/go-martini/martini
 
+goquery:
+	go get github.com/PuerkitoBio/goquery
+
 server:
-	${GOBIN}/server
+	go run server.go
 
 xrom:
 	go run xrom.go
@@ -44,5 +47,15 @@ main:
 	go run main.go
 
 start:clear-pkg dependence build run
+
+gotest:
+	go run gotest.go
+
+
+tool:
+	go run tools.go
+
+json:
+	go run json.go
 
 

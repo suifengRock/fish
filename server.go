@@ -2,30 +2,20 @@ package main
 
 import (
 	"fmt"
-	//"github.com/go-martini/martini"
-	"os"
+	"log"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
-// func main() {
-// 	m := martini.Classic()
-// 	m.Get("/", func() string {
-// 		return "Hello world!"
-// 	})
-// 	m.Run()
-// }
-//
-func main() {
-	f, err := os.Open("test.txt")
+func ExampleScrape() {
+	doc, err := goquery.NewDocument("http://0.0.0.0:8800/admin/login")
 	if err != nil {
-		panic("open failed!")
+		log.Fatal(err)
 	}
-	defer f.Close()
 
-	buff := make([]byte, 1024)
-	for n, err := f.Read(buff); err == nil; n, err = f.Read(buff) {
-		fmt.Print(string(buff[:n]))
-	}
-	if err != nil {
-		panic(fmt.Sprintf("Read occurs error: %s", err))
-	}
+	val, _ := doc.Find("input[name=_xsrf]").Attr("value")
+	fmt.Println(val)
+}
+func main() {
+	ExampleScrape()
 }
