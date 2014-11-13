@@ -45,7 +45,7 @@ func NewBaseInfo() (obj *BaseInfo) {
 
 func InsertProvinces(xrom *xorm.Engine, name string, code string, pId int64) int64 {
 	obj := NewProvincesCode(name, code, pId)
-	// xrom.Insert(obj)
+	//xrom.Insert(obj)
 	return obj.Id
 }
 
@@ -86,9 +86,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(obj.Id)
-	firstCode := ""
-	secondCode := ""
+
 	var parentId int64
 	for index, val := range provinces {
 		if index%2 == 0 {
@@ -98,19 +96,21 @@ func main() {
 		code := provinces[index-1]
 		name := val
 		if splitString(code, 3, 6) == "0000" {
-			firstCode = splitString(code, 0, 2)
+			firstCode := splitString(code, 0, 2)
 			parentId = InsertProvinces(orm, name, firstCode, int64(0))
+			fmt.Println(name, ":", firstCode)
 			continue
 		}
 		if splitString(code, 5, 6) == "00" {
-			secondCode = splitString(code, 3, 4)
+			secondCode := splitString(code, 3, 4)
 			parentId = InsertProvinces(orm, name, secondCode, parentId)
+			fmt.Println(name, ":", secondCode)
 			continue
 		}
 
 		thirdCode := splitString(code, 5, 6)
 		InsertProvinces(orm, name, thirdCode, parentId)
-
+		fmt.Println(name, ":", thirdCode)
 	}
 
 }
