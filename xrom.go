@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-
+	"runtime"
+	"strconv"
 	"time"
 	"tools"
 
@@ -10,13 +11,18 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
+func init() {
+	runtime.GOMAXPROCS(3)
+}
+
 type BaseInfo struct {
-	Id        int64
-	Name      string `xorm:"index"`
-	Age       string
-	Gender    string
-	IdNum     string    `xorm:"varchar(18) index unique not null"`
-	CreatedAt time.Time `xorm:"created"`
+	Id          int64
+	Name        string `xorm:"index"`
+	Age         string
+	Gender      string
+	IdNum       string `xorm:"varchar(18) index unique not null"`
+	ProvincesID int64
+	CreatedAt   time.Time `xorm:"created"`
 }
 
 type ProvincesCode struct {
@@ -34,11 +40,12 @@ func NewProvincesCode(name string, code string, pId int64) (obj *ProvincesCode) 
 	return
 }
 
-func NewBaseInfo() (obj *BaseInfo) {
+func NewBaseInfo(pId int64) (obj *BaseInfo) {
 	obj = new(BaseInfo)
 	obj.Name = tools.NoSpeStr(13)
 	obj.Age = tools.NumberOnly(2)
 	obj.Gender = tools.StringRand("男女", 1)
+	obj.ProvincesID = pId
 	obj.IdNum = tools.NumberOnly(18)
 	return
 }
@@ -57,35 +64,7 @@ func sync(engine *xorm.Engine) error {
 	return engine.Sync(&BaseInfo{}, &ProvincesCode{})
 }
 
-func main() {
-
-	orm, err := mysqlEngine()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer orm.Close()
-	orm.ShowSQL = true
-	err = sync(orm)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	tables, err := orm.DBMetas()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, table := range tables {
-		fmt.Println(table.Name)
-	}
-	obj := NewBaseInfo()
-	_, err = orm.Insert(obj)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+func IDnumGeneration(orm *xorm.Engine) {
 
 	var parentId int64
 	for index, val := range provinces {
@@ -112,6 +91,86 @@ func main() {
 		InsertProvinces(orm, name, thirdCode, parentId)
 		fmt.Println(name, ":", thirdCode)
 	}
+}
+
+func GetAllProvincesID(orm *xorm.Engine) (res []string) {
+	obj := new(ProvincesCode)
+	rows, _ := orm.Where("parent_id = ?", 0).Rows(obj)
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(obj)
+		id := strconv.FormatInt(obj.Id, 10)
+		res = append(res, id)
+	}
+	return
+}
+
+func RangeInsertData(orm *xorm.Engine, provincesIds []string) {
+
+	rangeNum := 10
+
+	for i := 0; i < rangeNum; i++ {
+
+		randID := tools.Random(provincesIds, 1)
+		pId, _ := strconv.ParseInt(randID, 10, 64)
+		obj := NewBaseInfo(pId)
+		_, err := orm.Insert(obj)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func GenerationBigData(orm *xorm.Engine, count int) {
+
+	queue := make(chan int, count)
+	provincesIds := GetAllProvincesID(orm)
+	for i := 0; i < count; i++ {
+		go func(xrom *xorm.Engine, ids []string, x int) {
+			RangeInsertData(xrom, ids)
+			queue <- x
+		}(orm, provincesIds, i)
+	}
+
+	to := time.NewTimer(time.Second)
+	for i := 0; i < count; i++ {
+		to.Reset(time.Second * 2)
+		select {
+		case <-queue:
+		case <-to.C:
+			fmt.Println("......timeout")
+		}
+	}
+
+}
+
+func main() {
+
+	orm, err := mysqlEngine()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer orm.Close()
+	// orm.ShowSql = true
+	orm.SetMaxIdleConns(1024)
+	orm.SetMaxOpenConns(5120)
+	err = sync(orm)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// begin := 1
+	// for i := 0; i < begin; i++ {
+
+	GenerationBigData(orm, 10240)
+
+	// }
+	// GetAllProvincesID(orm)
+
+	// IDnumGeneration(orm)
+	fmt.Println(".............end")
 
 }
 
