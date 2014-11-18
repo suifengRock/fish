@@ -2,10 +2,13 @@ myProject
 =========
 
 #dependence
+
 *make
+
 *go1.3+
 
 #begin
+
 *first
 
     git clone git@github.com:suifengRock/myProject.git
