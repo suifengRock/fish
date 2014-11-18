@@ -28,11 +28,18 @@ get-xrom:
 get-mysql:
 	go get github.com/go-sql-driver/mysql
 
-dependence:
-	go install github.com/go-sql-driver/mysql
-
-goquery:
+get-goquery:
 	go get github.com/PuerkitoBio/goquery
+
+dependence:get-xrom get-mysql get-martini goquery
+	
+install:
+	go install github.com/go-sql-driver/mysql	
+	go install github.com/go-xorm/xorm
+	go install github.com/PuerkitoBio/goquery
+	go install github.com/go-martini/martini
+
+init:dependence install
 
 server:
 	go run server.go
@@ -46,7 +53,7 @@ mysql:
 main:
 	go run main.go
 
-start:clear-pkg dependence build run
+start:clear-pkg install build run
 
 gotest:
 	go run gotest.go
@@ -57,7 +64,6 @@ tool:
 
 json:
 	go run json.go
-
 
 test:
 	go run src/github.com/go-xorm/xorm/examples/goroutine.go

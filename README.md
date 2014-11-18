@@ -16,5 +16,7 @@ first
 And Then
 
     make init
+    make xrom
 
-that's OK! ~0.0~
+that's OK! 
+
