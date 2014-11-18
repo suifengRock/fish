@@ -3,17 +3,17 @@ myProject
 
 #dependence
 
-*make
+make
 
-*go1.3+
+go1.3+
 
 #begin
 
-*first
+first
 
     git clone git@github.com:suifengRock/myProject.git
 
-*And Then
+And Then
 
     make init
 
