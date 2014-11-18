@@ -29,7 +29,7 @@ get-mysql:
 	go get github.com/go-sql-driver/mysql
 
 dependence:
-	go install github.com/go-martini/martini
+	go install github.com/go-sql-driver/mysql
 
 goquery:
 	go get github.com/PuerkitoBio/goquery
@@ -38,7 +38,7 @@ server:
 	go run server.go
 
 xrom:
-	go run xrom.go
+	time go run xrom.go
 	
 mysql:
 	go run mysql.go
@@ -58,4 +58,7 @@ tool:
 json:
 	go run json.go
 
+
+test:
+	go run src/github.com/go-xorm/xorm/examples/goroutine.go
 

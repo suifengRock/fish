@@ -46,7 +46,7 @@ func NewBaseInfo(pId int64) (obj *BaseInfo) {
 	obj.Age = tools.NumberOnly(2)
 	obj.Gender = tools.StringRand("男女", 1)
 	obj.ProvincesID = pId
-	obj.IdNum = tools.NumberOnly(18)
+	obj.IdNum = tools.StringRand(tools.Capital+tools.Number+tools.Lowercase+tools.SpeStr, 18)
 	return
 }
 
@@ -114,20 +114,24 @@ func RangeInsertData(orm *xorm.Engine, provincesIds []string) {
 		randID := tools.Random(provincesIds, 1)
 		pId, _ := strconv.ParseInt(randID, 10, 64)
 		obj := NewBaseInfo(pId)
-		_, err := orm.Insert(obj)
-		if err != nil {
-			fmt.Println(err)
-		}
+		orm.Insert(obj)
+		// _, err := orm.Insert(obj)
+		// if err != nil {
+		// fmt.Println(err)
+		// }
 	}
+
 }
 
 func GenerationBigData(orm *xorm.Engine, count int) {
 
 	queue := make(chan int, count)
 	provincesIds := GetAllProvincesID(orm)
+	success := 0
 	for i := 0; i < count; i++ {
 		go func(xrom *xorm.Engine, ids []string, x int) {
 			RangeInsertData(xrom, ids)
+			success++
 			queue <- x
 		}(orm, provincesIds, i)
 	}
@@ -141,7 +145,7 @@ func GenerationBigData(orm *xorm.Engine, count int) {
 			fmt.Println("......timeout")
 		}
 	}
-
+	fmt.Println("success:", success)
 }
 
 func main() {
@@ -161,16 +165,15 @@ func main() {
 		return
 	}
 
-	// begin := 1
-	// for i := 0; i < begin; i++ {
+	begin := 50
+	for i := 0; i < begin; i++ {
 
-	GenerationBigData(orm, 10240)
+		GenerationBigData(orm, 1024)
 
-	// }
+	}
 	// GetAllProvincesID(orm)
 
 	// IDnumGeneration(orm)
-	fmt.Println(".............end")
 
 }
 

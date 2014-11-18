@@ -73,3 +73,11 @@ func NoSpeStr(req int) string {
 	baseStr := strings.Split(Capital+Number+Lowercase, "")
 	return Random(baseStr, req)
 }
+
+func AllStr(req int) string {
+	if req <= 0 {
+		return ""
+	}
+	baseStr := strings.Split(SpeStr+Capital+Number+Lowercase, "")
+	return Random(baseStr, req)
+}
