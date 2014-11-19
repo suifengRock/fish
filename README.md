@@ -1,5 +1,6 @@
 myProject
 =========
+simple experiment go staff for mysql concurrent test!
 
 #dependence
 
