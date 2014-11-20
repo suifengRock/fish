@@ -21,7 +21,7 @@ type BaseInfo struct {
 	Name        string `xorm:"index"`
 	Age         string
 	Gender      string
-	IdNum       string `xorm:"varchar(18) index unique not null"`
+	IdNum       string `xorm:"varchar(18) index not null"`
 	ProvincesID int64
 	CreatedAt   time.Time `xorm:"created"`
 }
@@ -58,7 +58,7 @@ func sync(engine *xorm.Engine) error {
 	return engine.Sync(&BaseInfo{}, &tools.ProvincesCode{})
 }
 
-func RangeInsertData(orm *xorm.Engine, provincesIds []string) {
+func RangeInsertData(orm *xorm.Engine, provincesIds []string) (err error) {
 
 	rangeNum := 10
 
@@ -67,12 +67,15 @@ func RangeInsertData(orm *xorm.Engine, provincesIds []string) {
 		randID := tools.Random(provincesIds, 1)
 		pId, _ := strconv.ParseInt(randID, 10, 64)
 		obj := NewBaseInfo(pId)
-		orm.Insert(obj)
-		// _, err := orm.Insert(obj)
-		// if err != nil {
-		// fmt.Println(err)
-		// }
+		// orm.Insert(obj)
+		_, err = orm.Insert(obj)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
+
+	return
 
 }
 
@@ -83,7 +86,10 @@ func GenerationBigData(orm *xorm.Engine, count int) {
 	success := 0
 	for i := 0; i < count; i++ {
 		go func(xrom *xorm.Engine, ids []string, x int) {
-			RangeInsertData(xrom, ids)
+			err := RangeInsertData(xrom, ids)
+			if err != nil {
+				return
+			}
 			success++
 			queue <- x
 		}(orm, provincesIds, i)
@@ -113,20 +119,26 @@ func main() {
 	// orm.ShowSql = true
 	orm.SetMaxIdleConns(1024)
 	orm.SetMaxOpenConns(5120)
+	err = orm.DropTables(&BaseInfo{})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	err = sync(orm)
 	if err != nil {
 		panic(err)
 		fmt.Println(err)
 		return
 	}
-
 	tools.CheckProvincesData(orm)
 
-	begin := 50
+	begin := 10
 	for i := 0; i < begin; i++ {
 
 		GenerationBigData(orm, 1024)
 
 	}
+
+	count, _ := orm.Count(&BaseInfo{})
+	fmt.Println("this is count:", count)
 
 }
