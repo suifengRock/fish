@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -13,7 +14,25 @@ type User struct {
 }
 
 func main() {
-	engine, _ := xorm.NewEngine("mysql", "root:@/my?charset=utf8")
+
+	addr := os.Getenv("DB_PORT_3306_TCP_ADDR")
+	port := os.Getenv("DB_PORT_3306_TCP_PORT")
+	proto := os.Getenv("DB_PORT_3306_TCP_PROTO")
+	user := os.Getenv("DB_ENV_MYSQL_USER")
+	password := os.Getenv("DB_ENV_MYSQL_PASSWORD")
+	database := os.Getenv("DB_ENV_MYSQL_DATABASE")
+
+	conn := "root:123456@/my?charset=utf8"
+
+	if addr != "" {
+		conn = fmt.Sprintf("%v:%v@%v(%v:%v)/%v?charset=utf8", user, password, proto, addr, port, database)
+		fmt.Println("the connection is " + conn)
+	}
+
+	engine, err := xorm.NewEngine("mysql", conn)
+	if err != nil {
+		panic(err)
+	}
 	defer engine.Close()
 
 	// user := new(User)

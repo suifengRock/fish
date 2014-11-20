@@ -1,0 +1,18 @@
+goapp:
+  build: .
+  links:
+  - db
+  volumes:
+  - .:/gopath
+  ports:
+  - "8800:8800"
+db:
+  image: mysql
+  command: mysqld --datadir=/var/lib/mysql --user=mysql --lower_case_table_names=1
+  ports:
+  - "3306:3306"
+  environment:
+  - MYSQL_ROOT_PASSWORD=12345678
+  - MYSQL_DATABASE=myData
+  - MYSQL_USER=test
+  - MYSQL_PASSWORD=123456
