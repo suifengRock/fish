@@ -4,7 +4,7 @@ export GOBIN := ${GOPATH}/bin
 export BRANCH := $(shell git branch | grep '*' | tr -d '* ')
 .PHONY: dependence watch build watch tpl model controller flow fig
 UNAME_S := $(shell uname -s)
-DOCKER_RUN_GO := fig run goapp
+DOCKER_RUN_GO := fig run --rm goapp
 FIG_VERSION := $(shell fig --version 2>/dev/null)
 
 ifeq ($(UNAME_S),Linux)
@@ -15,6 +15,7 @@ endif
 export XARGS
 
 all:clear-pkg mysql
+
 	
 clear-pkg:
 	rm -rf pkg

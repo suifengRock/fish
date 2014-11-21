@@ -18,6 +18,8 @@ And Then:
     make initc 
     make xromc
 
+use fig run --rm dbclient to connecte to mysql
+
 that's OK! 
 
 
