@@ -4,7 +4,7 @@ export GOBIN := ${GOPATH}/bin
 export BRANCH := $(shell git branch | grep '*' | tr -d '* ')
 .PHONY: dependence watch build watch tpl model controller flow fig
 UNAME_S := $(shell uname -s)
-DOCKER_RUN_GO := fig run goapp
+DOCKER_RUN_GO := fig run --rm goapp
 FIG_VERSION := $(shell fig --version 2>/dev/null)
 
 ifeq ($(UNAME_S),Linux)
@@ -15,6 +15,7 @@ endif
 export XARGS
 
 all:clear-pkg mysql
+
 	
 clear-pkg:
 	rm -rf pkg
@@ -78,6 +79,9 @@ else
 	@echo fig Not found try to install it
 	curl -L https://github.com/docker/fig/releases/download/1.0.1/fig-`uname -s`-`uname -m` > /usr/local/bin/fig; chmod +x /usr/local/bin/fig
 endif
+
+initc:fig
+	$(DOCKER_RUN_GO) chmod +x dep.sh && ./dep.sh	
 
 shell: fig
 	$(DOCKER_RUN_GO) bash

@@ -16,3 +16,13 @@ db:
   - MYSQL_DATABASE=myData
   - MYSQL_USER=test
   - MYSQL_PASSWORD=123456
+dbadmin:
+  image: mysql
+  links:
+  - db
+  command: sh -c 'mysqladmin -h"$DB_PORT_3306_TCP_ADDR" -uroot  -p"$DB_ENV_MYSQL_ROOT_PASSWORD" extended-status --relative --sleep=10'
+dbclient:
+  image: mysql
+  links:
+  - db
+  command: sh -c 'exec mysql -h"$DB_PORT_3306_TCP_ADDR" -P"$DB_PORT_3306_TCP_PORT" -uroot -p"$DB_ENV_MYSQL_ROOT_PASSWORD"'

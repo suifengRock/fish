@@ -1,23 +1,24 @@
-MyProject
+fish
 =========
 simple experiment go staff for mysql concurrent test!
 
 #dependence
 
 make
-
-go1.3+
+docker or boot2docker 
 
 #begin
 
 first:
 
-    git clone git@github.com:suifengRock/myProject.git
+    git clone git@github.com:suifengRock/fish.git
 
 And Then:
 
-    make init
-    make xrom
+    make initc 
+    make xromc
+
+use fig run --rm dbclient to connecte to mysql
 
 that's OK! 
 
