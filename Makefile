@@ -79,6 +79,9 @@ else
 	curl -L https://github.com/docker/fig/releases/download/1.0.1/fig-`uname -s`-`uname -m` > /usr/local/bin/fig; chmod +x /usr/local/bin/fig
 endif
 
+initc:fig
+	$(DOCKER_RUN_GO) chmod +x dep.sh && ./dep.sh	
+
 shell: fig
 	$(DOCKER_RUN_GO) bash
 
