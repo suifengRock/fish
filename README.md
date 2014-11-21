@@ -11,7 +11,7 @@ docker or boot2docker
 
 first:
 
-    git clone git@github.com:suifengRock/fish.git
+    git clone git@github.com:suifengRock/fish.git 
 
 And Then:
 
@@ -20,7 +20,7 @@ And Then:
 
 use fig run --rm dbclient to connecte to mysql
 
-that's OK! 
+that's OK! !
 
 
 
