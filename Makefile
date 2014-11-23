@@ -101,6 +101,9 @@ toolc: fig
 jsonc: fig
 	$(DOCKER_RUN_GO) go run json.go
 
+sysbench: fig
+	fig run --rm sysbench
+
 
 
 

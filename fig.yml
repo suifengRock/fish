@@ -8,7 +8,7 @@ goapp:
   - "8800:8800"
 db:
   image: mysql
-  command: mysqld --datadir=/var/lib/mysql --user=mysql --lower_case_table_names=1
+  command: mysqld --datadir=/var/lib/mysql --user=mysql --lower_case_table_names=1 --socket=/var/lib/mysql/mysql.sock
   ports:
   - "3306:3306"
   environment:
@@ -16,13 +16,23 @@ db:
   - MYSQL_DATABASE=myData
   - MYSQL_USER=test
   - MYSQL_PASSWORD=123456
-dbadmin:
-  image: mysql
+sysbench:
+  build: ./subsystem/sysbench
+  volumes:
+  - .:/sysbench
   links:
   - db
-  command: sh -c 'mysqladmin -h"$DB_PORT_3306_TCP_ADDR" -uroot  -p"$DB_ENV_MYSQL_ROOT_PASSWORD" extended-status --relative --sleep=10'
+  command: sh -c 'chmod +x /sysbench/sysbench.sh ; /sysbench/sysbench.sh'
 dbclient:
   image: mysql
   links:
   - db
   command: sh -c 'exec mysql -h"$DB_PORT_3306_TCP_ADDR" -P"$DB_PORT_3306_TCP_PORT" -uroot -p"$DB_ENV_MYSQL_ROOT_PASSWORD"'
+dbshell:
+  image: mysql
+  links:
+  - db
+  volumes_from:
+  - db
+  working_dir: /var/lib/mysql
+  command: bash
