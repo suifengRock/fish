@@ -23,8 +23,6 @@ clear-pkg:
 build:
 	time go install xrom.go
 
-get-martini:
-	go get github.com/go-martini/martini
 
 get-xrom:
 	go get github.com/go-xorm/xorm
@@ -32,21 +30,14 @@ get-xrom:
 get-mysql:
 	go get github.com/go-sql-driver/mysql
 
-get-goquery:
-	go get github.com/PuerkitoBio/goquery
 
-dependence:get-xrom get-mysql get-martini get-goquery
+dependence:get-xrom get-mysql 
 	
 install:
 	go install github.com/go-sql-driver/mysql	
 	go install github.com/go-xorm/xorm
-	go install github.com/PuerkitoBio/goquery
-	go install github.com/go-martini/martini
 
 init:dependence install
-
-server:
-	go run server.go
 
 xrom:
 	time go run xrom.go
@@ -59,15 +50,8 @@ main:
 
 start:clear-pkg install build run
 
-gotest:
-	go run gotest.go
-
-
 tool:
 	go run tools.go
-
-json:
-	go run json.go
 
 test:
 	go run src/github.com/go-xorm/xorm/examples/goroutine.go
@@ -89,17 +73,11 @@ shell: fig
 mysqlc: fig
 	$(DOCKER_RUN_GO) go run mysql.go
 
-serverc: fig
-	$(DOCKER_RUN_GO) go run server.go
-
 xromc: fig
 	$(DOCKER_RUN_GO) go run xrom.go
 
 toolc: fig
 	$(DOCKER_RUN_GO) go run tools.go
-
-jsonc: fig
-	$(DOCKER_RUN_GO) go run json.go
 
 sysbench: fig
 	fig run --rm sysbench

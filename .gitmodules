@@ -1,3 +1,0 @@
-[submodule "github.com/bitly/go-simplejson"]
-	path = src/tools/go-simplejson
-	url = git@github.com:bitly/go-simplejson.git
